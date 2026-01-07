@@ -1,0 +1,8 @@
+---
+- name: Use custom role from collection
+  hosts: localhost
+  connection: local
+  collections:
+    - francotirador.yandex_cloud_elk
+  roles:
+    - my_module

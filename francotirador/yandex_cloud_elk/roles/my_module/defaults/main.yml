@@ -1,0 +1,2 @@
+path: ./hello.txt
+content: "Hello World from my own module!"
