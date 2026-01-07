@@ -1,8 +1,6 @@
----
-- name: Use custom role from collection
+- name: Create file with custom module
   hosts: localhost
-  connection: local
-  collections:
-    - francotirador.yandex_cloud_elk
-  roles:
-    - my_module
+  tasks:
+    - francotirador.yandex_cloud_elk.my_module:
+        path: ./test.txt
+        content: "Hello from single task"
