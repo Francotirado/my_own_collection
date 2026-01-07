@@ -52,59 +52,45 @@ path:
 import os
 from ansible.module_utils.basic import AnsibleModule
 
-
 def run_module():
-    # define available arguments/parameters a user can pass to the module
     module_args = dict(
         path=dict(type='str', required=True),
         content=dict(type='str', required=True)
     )
 
-    # seed the result dict in the object
-    # we primarily care about changed and state
-    # changed is if this module effectively modified the target
-    # state will include any data that you want your module to pass back
-    # for consumption, for example, in a subsequent task
     result = dict(
         changed=False,
         path=''
     )
 
-    # the AnsibleModule object will be our abstraction working with Ansible
-    # this includes instantiation, a couple of common attr would be the
-    # args/params passed to the execution, as well as if the module
-    # supports check mode
     module = AnsibleModule(
         argument_spec=module_args,
         supports_check_mode=True
     )
 
-    # if the user is working with this module in only check mode we do not
-    # want to make any changes to the environment, just return the current
-    # state with no modifications
     path = module.params['path']
     content = module.params['content']
 
-    # Check if file exists and content matches
-    file_exists = os.path.exists(path)
-    current_content = None
-    if file_exists:
-        with open(path, 'r') as f:
+    changed = False
+    if os.path.exists(path):
+        with open(path, 'r', encoding='utf-8') as f:
             current_content = f.read()
-
-    # Decide if we need to change
-    needs_update = not file_exists or current_content != content
+        if current_content != content:
+            changed = True
+    else:
+        changed = True
 
     if module.check_mode:
-        module.exit_json(changed=needs_update, path=path)
+        module.exit_json(changed=changed, path=path)
 
-    if needs_update:
-        with open(path, 'w') as f:
+    if changed:
+        with open(path, 'w', encoding='utf-8') as f:
             f.write(content)
-        result['changed'] = True
 
+    result['changed'] = changed
     result['path'] = path
     module.exit_json(**result)
+
 
 def main():
     run_module()
